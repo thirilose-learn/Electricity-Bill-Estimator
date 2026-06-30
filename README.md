@@ -1,6 +1,6 @@
 # ⚡ Electricity Bill Estimator
 
-> A Python + Gradio web app that helps households track energy consumption and estimate electricity bills — from simple flat-rate calculations to a full monthly comparison dashboard.
+> A Python + Gradio web app that helps households track energy consumption and estimate electricity bills — from simple flat-rate calculations to a full 12-month annual comparison dashboard.
 
 ---
 
@@ -32,7 +32,7 @@ Many households are unaware of how much electricity they consume daily and strug
 - ✅ Support for flat-rate and slab-based pricing models
 - ✅ Input validation and error handling
 - ✅ Interactive web interface built with Gradio
-- ✅ Monthly comparison dashboard *(Extended version)*
+- ✅ 12-month annual comparison dashboard *(Extended version)*
 
 ---
 
@@ -74,8 +74,8 @@ Implements a tiered pricing model (common in Indian electricity billing):
 | 201 – 300 units | ₹4.00 |
 | Above 300 units | ₹6.00 |
 
-### 🔴 Extended — Monthly Comparison Dashboard
-- Enter consumption data for multiple months
+### 🔴 Extended — 12-Month Annual Comparison Dashboard
+- Enter consumption data for a full 12-month year
 - Visual bar chart comparing monthly bills
 - Highlights the highest and lowest billing months
 - Built entirely within the Gradio interface
@@ -111,7 +111,7 @@ The app will launch in your browser at `http://localhost:7860`
 1. Enter the number of units consumed in the input field.
 2. Select the pricing model (Basic / Slab-based).
 3. Click **Calculate** to see your estimated bill.
-4. *(Extended version)* Enter consumption for each month and view the comparison chart.
+4. *(Extended version)* Enter consumption for a full year and view the annual comparison chart.
 
 ---
 
@@ -131,7 +131,7 @@ electricity-bill-estimator/
 
 > *(Note: The images below are placeholders. Please add actual Gradio app screenshots here after running the project)*
 
-| Basic Calculator | Slab-Based | Monthly Dashboard |
+| Basic Calculator | Slab-Based | Annual Dashboard |
 |---|---|---|
 | ![Basic](Screenshots/base_calculator.png) | ![Slab](Screenshots/monthly_dashboard.png) | ![Dashboard](Screenshots/slab-based.png) |
 

@@ -122,10 +122,14 @@ def slab_calculator(units: float, slab1_limit: float, slab1_rate: float, slab2_l
     except Exception as e:
         return f"⚠️ **Error:** {str(e)}"
 
-def generate_comparison_charts(jan: float, feb: float, mar: float, apr: float, may: float, jun: float, flat_rate: float, slab1_limit: float, slab1_rate: float, slab2_limit: float, slab2_rate: float, slab3_rate: float, base_charge: float) -> Tuple[go.Figure, str]:
+def generate_comparison_charts(mode: str, jan: float, feb: float, mar: float, apr: float, may: float, jun: float, jul: float, aug: float, sep: float, oct: float, nov: float, dec: float, flat_rate: float, slab1_limit: float, slab1_rate: float, slab2_limit: float, slab2_rate: float, slab3_rate: float, base_charge: float) -> Tuple[go.Figure, str]:
     try:
-        months = ["January", "February", "March", "April", "May", "June"]
-        usages = [jan, feb, mar, apr, may, jun]
+        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        usages = [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
+        
+        if mode == "6-Month Dashboard":
+            months = months[:6]
+            usages = usages[:6]
 
         # Validate inputs
         if any(u is None or u < 0 for u in usages):
@@ -212,40 +216,39 @@ def generate_comparison_charts(jan: float, feb: float, mar: float, apr: float, m
 
         # Calculate metrics summaries
         total_usage = sum(usages)
-        avg_usage = total_usage / 6
+        avg_usage = total_usage / len(usages)
         total_flat_cost = sum(flat_bills)
         total_slab_cost = sum(slab_bills)
         savings = total_flat_cost - total_slab_cost
         cheaper_model = "Slab Pricing" if savings > 0 else "Flat Rate"
         abs_savings = abs(savings)
 
+        title = "12-Month Annual Summary Analysis" if mode == "12-Month Dashboard" else "6-Month Summary Analysis"
         summary_html = f"""
-        <div style="background-color: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px;">
-            <h4 style="margin-top: 0; color: #38bdf8;">📊 6-Month Summary Analysis</h4>
-            <table style="width: 100%; border-collapse: collapse; color: #e2e8f0; font-size: 14px;">
-                <tr>
-                    <td style="padding: 6px 0;">Total Consumption:</td>
-                    <td style="text-align: right; font-weight: bold; color: #10b981;">{total_usage:.1f} kWh</td>
-                </tr>
-                <tr>
-                    <td style="padding: 6px 0;">Average Monthly Consumption:</td>
-                    <td style="text-align: right; font-weight: bold;">{avg_usage:.1f} kWh/month</td>
-                </tr>
-                <tr>
-                    <td style="padding: 6px 0;">Total Cost under Flat Rate:</td>
-                    <td style="text-align: right; font-weight: bold; color: #f59e0b;">₹{total_flat_cost:.2f}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 6px 0;">Total Cost under Slab Pricing:</td>
-                    <td style="text-align: right; font-weight: bold; color: #3b82f6;">₹{total_slab_cost:.2f}</td>
-                </tr>
-                <tr style="border-top: 1px solid #475569;">
-                    <td style="padding: 10px 0 0 0; font-weight: bold; color: #a7f3d0;">Recommendation:</td>
-                    <td style="padding: 10px 0 0 0; text-align: right; font-weight: bold; color: #34d399;">
-                        {cheaper_model} is more economical by ₹{abs_savings:.2f}!
-                    </td>
-                </tr>
-            </table>
+        <div style="background-color: #1e293b; padding: 20px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px;">
+            <h4 style="margin-top: 0; margin-bottom: 15px; color: #38bdf8;">📊 {title}</h4>
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 15px;">
+                <div style="flex: 1; min-width: 150px;">
+                    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;">⚡ Total Consumption</div>
+                    <div style="font-size: 20px; font-weight: bold; color: #10b981;">{total_usage:.1f} kWh</div>
+                </div>
+                <div style="flex: 1; min-width: 150px; border-left: 1px solid #334155; padding-left: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;">📈 Average Monthly Consumption</div>
+                    <div style="font-size: 18px; font-weight: bold; color: #38bdf8;">{avg_usage:.1f} kWh/month</div>
+                </div>
+                <div style="flex: 1; min-width: 150px; border-left: 1px solid #334155; padding-left: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;">💰 Total Cost (Flat Rate)</div>
+                    <div style="font-size: 20px; font-weight: bold; color: #f59e0b;">₹{total_flat_cost:.2f}</div>
+                </div>
+                <div style="flex: 1; min-width: 150px; border-left: 1px solid #334155; padding-left: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;">💵 Total Cost (Slab Pricing)</div>
+                    <div style="font-size: 20px; font-weight: bold; color: #3b82f6;">₹{total_slab_cost:.2f}</div>
+                </div>
+                <div style="flex: 1; min-width: 200px; border-left: 1px solid #334155; padding-left: 15px;">
+                    <div style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;">⭐ Recommendation</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #34d399;">{cheaper_model} is more economical by ₹{abs_savings:.2f}!</div>
+                </div>
+            </div>
         </div>
         """
 
@@ -356,28 +359,43 @@ with gr.Blocks() as demo:
         with gr.TabItem("📈 Extended: Monthly Dashboard"):
             gr.Markdown("Enter your monthly energy usage to visualize costs and analyze which pricing model is best for you.")
             
-            with gr.Row():
-                # Usage fields for 6 months
-                with gr.Column(scale=1):
-                    gr.Markdown("#### Enter Consumption (kWh) for Each Month")
-                    jan_val = gr.Slider(label="January (kWh)", minimum=0, maximum=1000, value=220, step=5)
-                    feb_val = gr.Slider(label="February (kWh)", minimum=0, maximum=1000, value=190, step=5)
-                    mar_val = gr.Slider(label="March (kWh)", minimum=0, maximum=1000, value=250, step=5)
-                    apr_val = gr.Slider(label="April (kWh)", minimum=0, maximum=1000, value=310, step=5)
-                    may_val = gr.Slider(label="May (kWh)", minimum=0, maximum=1000, value=450, step=5)
-                    jun_val = gr.Slider(label="June (kWh)", minimum=0, maximum=1000, value=520, step=5)
-                    
-                    compare_btn = gr.Button("Generate Dashboard & Comparison", variant="primary")
-                
-                # Interactive Plotly chart and analysis panel
-                with gr.Column(scale=2):
-                    summary_panel = gr.HTML("<div style='text-align: center; color: #64748b; padding-top: 40px;'>Enter data and click the button to see comparative analysis.</div>")
-                    comparison_plot = gr.Plot(label="Analysis Visualization")
+            dash_mode = gr.Radio(["12-Month Dashboard", "6-Month Dashboard"], value="12-Month Dashboard", label="Dashboard Type")
             
+            gr.Markdown("#### Enter Monthly Energy Consumption (kWh)")
+            with gr.Row():
+                jan_val = gr.Slider(label="January (kWh)", minimum=0, maximum=1000, value=220, step=5)
+                feb_val = gr.Slider(label="February (kWh)", minimum=0, maximum=1000, value=190, step=5)
+                mar_val = gr.Slider(label="March (kWh)", minimum=0, maximum=1000, value=250, step=5)
+                apr_val = gr.Slider(label="April (kWh)", minimum=0, maximum=1000, value=310, step=5)
+                may_val = gr.Slider(label="May (kWh)", minimum=0, maximum=1000, value=450, step=5)
+                jun_val = gr.Slider(label="June (kWh)", minimum=0, maximum=1000, value=520, step=5)
+            
+            with gr.Row() as h2_row:
+                jul_val = gr.Slider(label="July (kWh)", minimum=0, maximum=1000, value=500, step=5)
+                aug_val = gr.Slider(label="August (kWh)", minimum=0, maximum=1000, value=480, step=5)
+                sep_val = gr.Slider(label="September (kWh)", minimum=0, maximum=1000, value=350, step=5)
+                oct_val = gr.Slider(label="October (kWh)", minimum=0, maximum=1000, value=280, step=5)
+                nov_val = gr.Slider(label="November (kWh)", minimum=0, maximum=1000, value=230, step=5)
+                dec_val = gr.Slider(label="December (kWh)", minimum=0, maximum=1000, value=210, step=5)
+            
+            compare_btn = gr.Button("Generate Dashboard", variant="primary")
+            
+            summary_panel = gr.HTML("<div style='text-align: center; color: #64748b; padding-top: 20px;'>Enter data and click the button to see comparative analysis.</div>")
+            comparison_plot = gr.Plot(label="Analysis Visualization")
+            
+            def toggle_h2(mode):
+                if mode == "6-Month Dashboard":
+                    return gr.update(visible=False)
+                return gr.update(visible=True)
+                
+            dash_mode.change(fn=toggle_h2, inputs=dash_mode, outputs=h2_row)
+
             compare_btn.click(
                 fn=generate_comparison_charts,
                 inputs=[
+                    dash_mode,
                     jan_val, feb_val, mar_val, apr_val, may_val, jun_val,
+                    jul_val, aug_val, sep_val, oct_val, nov_val, dec_val,
                     global_flat_rate, slab1_lim, slab1_rt, slab2_lim, slab2_rt, slab3_rt, global_base
                 ],
                 outputs=[comparison_plot, summary_panel]
